@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { getRequestDetails } from "@/lib/usageDb";
-import { isLocalRequest } from "@/dashboardGuard";
+import { isLocalRequest, isAuthenticated } from "@/dashboardGuard";
 
 /**
  * GET /api/usage/request-details
@@ -49,10 +49,12 @@ export async function GET(request) {
     
     const result = await getRequestDetails(filter);
 
-    // Redact conversation payloads for remote requests only. Local
-    // (loopback) dashboard users see full request/response content.
+    // Redact conversation payloads for unauthenticated remote requests only.
+    // Logged-in dashboard users (local loopback or remote browser behind auth)
+    // see full request/response content.
     const local = isLocalRequest(request);
-    const redactedDetails = local
+    const authed = await isAuthenticated(request);
+    const redactedDetails = local || authed
       ? (result.details || [])
       : (result.details || []).map((d) => {
           const redacted = { ...d };

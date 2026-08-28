@@ -178,7 +178,7 @@ async function loadSettings() {
   }
 }
 
-async function isAuthenticated(request) {
+export async function isAuthenticated(request) {
   if (await hasValidToken(request)) return true;
   const settings = await loadSettings();
   if (settings && settings.requireLogin === false) return true;
@@ -192,6 +192,7 @@ function isPublicApi(pathname) {
 
 export const __test__ = {
   isLocalRequest,
+  isAuthenticated,
   isPublicLlmApi,
   extractApiKey,
   canAccessPublicLlmApi,
