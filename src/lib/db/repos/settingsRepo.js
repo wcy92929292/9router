@@ -63,6 +63,7 @@ const DEFAULT_SETTINGS = {
   pxpipeTimeoutMs: 15000,
   keywordBlockEnabled: false,
   keywordBlockList: "",
+  logRetentionDays: 7,
 };
 
 async function readRaw() {

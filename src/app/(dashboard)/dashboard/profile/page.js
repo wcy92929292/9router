@@ -673,6 +673,23 @@ export default function ProfilePage() {
     }
   };
 
+  const updateLogRetentionDays = async (days) => {
+    const numDays = parseInt(days);
+    if (isNaN(numDays) || numDays < 1) return;
+    try {
+      const res = await fetch("/api/settings", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ logRetentionDays: numDays }),
+      });
+      if (res.ok) {
+        setSettings(prev => ({ ...prev, logRetentionDays: numDays }));
+      }
+    } catch (err) {
+      console.error("Failed to update logRetentionDays:", err);
+    }
+  };
+
   const reloadSettings = async () => {
     try {
       const res = await fetch("/api/settings");
@@ -1643,6 +1660,33 @@ export default function ProfilePage() {
               checked={observabilityEnabled}
               onChange={updateObservabilityEnabled}
               disabled={loading}
+            />
+          </div>
+        </Card>
+
+        {/* Log Retention Settings */}
+        <Card>
+          <div className="flex items-center gap-3 mb-4">
+            <div className="p-2 rounded-lg bg-teal-500/10 text-teal-500 shrink-0">
+              <span className="material-symbols-outlined text-[20px]">delete_sweep</span>
+            </div>
+            <h3 className="text-base sm:text-lg font-semibold">Log Retention</h3>
+          </div>
+          <div className="flex items-start sm:items-center justify-between gap-4">
+            <div className="flex-1 min-w-0">
+              <p className="font-medium text-sm sm:text-base">Retention Days</p>
+              <p className="text-xs sm:text-sm text-text-muted">
+                Auto-delete file logs and request records older than this many days (runs every 6 hours)
+              </p>
+            </div>
+            <Input
+              type="number"
+              min="1"
+              max="365"
+              value={settings.logRetentionDays || 7}
+              onChange={(e) => updateLogRetentionDays(e.target.value)}
+              disabled={loading}
+              className="w-20 text-center shrink-0"
             />
           </div>
         </Card>

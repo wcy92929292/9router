@@ -118,6 +118,11 @@ async function runHeavyStartup() {
   import("@/sse/services/backgroundTokenRefresh.js")
     .then(({ startBackgroundTokenRefresh }) => startBackgroundTokenRefresh())
     .catch((e) => console.log("[BackgroundTokenRefresh] scheduler start failed:", e.message));
+
+  // Log retention — periodically delete file logs and DB request details older than N days
+  import("@/shared/services/logRetention.js")
+    .then(({ startLogRetention }) => startLogRetention())
+    .catch((e) => console.log("[LogRetention] scheduler start failed:", e.message));
 }
 
 function hasQuotaAutoPingEnabled(settings) {
