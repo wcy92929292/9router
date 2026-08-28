@@ -365,6 +365,14 @@ export default function RequestDetailsTab() {
                  <span className="text-text-main font-medium">{getProviderName(selectedDetail.provider, providerNameCache)}</span>
                </div>
               <div>
+                <span className="text-text-muted">API Key:</span>{" "}
+                <span className="break-all font-mono text-text-main">{selectedDetail.apiKey || "—"}</span>
+              </div>
+              <div>
+                <span className="text-text-muted">Key Name:</span>{" "}
+                <span className="text-text-main font-medium">{selectedDetail.apiKeyName || "—"}</span>
+              </div>
+              <div>
                 <span className="text-text-muted">Model:</span>{" "}
                 <span className="text-text-main font-mono">{selectedDetail.model}</span>
               </div>

@@ -73,3 +73,10 @@ export async function validateApiKey(key) {
   if (!row) return false;
   return row.isActive === 1 || row.isActive === true;
 }
+
+export async function getApiKeyRecordByKey(key) {
+  const db = await getAdapter();
+  const row = db.get(`SELECT id, name, isActive FROM apiKeys WHERE key = ?`, [key]);
+  if (!row) return null;
+  return { id: row.id, name: row.name, isActive: row.isActive === 1 || row.isActive === true };
+}
