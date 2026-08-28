@@ -643,6 +643,36 @@ export default function ProfilePage() {
     }
   };
 
+  const updateKeywordBlockEnabled = async (enabled) => {
+    try {
+      const res = await fetch("/api/settings", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ keywordBlockEnabled: enabled }),
+      });
+      if (res.ok) {
+        setSettings(prev => ({ ...prev, keywordBlockEnabled: enabled }));
+      }
+    } catch (err) {
+      console.error("Failed to update keywordBlockEnabled:", err);
+    }
+  };
+
+  const updateKeywordBlockList = async (list) => {
+    try {
+      const res = await fetch("/api/settings", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ keywordBlockList: list }),
+      });
+      if (res.ok) {
+        setSettings(prev => ({ ...prev, keywordBlockList: list }));
+      }
+    } catch (err) {
+      console.error("Failed to update keywordBlockList:", err);
+    }
+  };
+
   const reloadSettings = async () => {
     try {
       const res = await fetch("/api/settings");
@@ -734,6 +764,8 @@ export default function ProfilePage() {
   };
 
   const observabilityEnabled = settings.enableObservability === true;
+  const keywordBlockEnabled = settings.keywordBlockEnabled === true;
+  const keywordBlockList = settings.keywordBlockList || "";
 
   const handleShutdown = async () => {
     setIsShuttingDown(true);
@@ -1613,6 +1645,44 @@ export default function ProfilePage() {
               disabled={loading}
             />
           </div>
+        </Card>
+
+        {/* Keyword Block Settings */}
+        <Card>
+          <div className="flex items-center gap-3 mb-4">
+            <div className="p-2 rounded-lg bg-red-500/10 text-red-500 shrink-0">
+              <span className="material-symbols-outlined text-[20px]">block</span>
+            </div>
+            <h3 className="text-base sm:text-lg font-semibold">Keyword Block</h3>
+          </div>
+          <div className="flex items-start sm:items-center justify-between gap-4 mb-4">
+            <div className="flex-1 min-w-0">
+              <p className="font-medium text-sm sm:text-base">Enable Keyword Block</p>
+              <p className="text-xs sm:text-sm text-text-muted">
+                Reject requests whose message content contains blocked keywords
+              </p>
+            </div>
+            <Toggle
+              checked={keywordBlockEnabled}
+              onChange={updateKeywordBlockEnabled}
+              disabled={loading}
+            />
+          </div>
+          {keywordBlockEnabled && (
+            <div>
+              <label className="block text-xs sm:text-sm text-text-muted mb-1">
+                Blocked Keywords (comma or newline separated)
+              </label>
+              <textarea
+                value={keywordBlockList}
+                onChange={(e) => updateKeywordBlockList(e.target.value)}
+                placeholder="小说, 日记, 财经, 金融"
+                rows={3}
+                disabled={loading}
+                className="w-full rounded-lg border border-black/10 bg-black/5 px-3 py-2 text-sm text-text-main outline-none focus:border-primary dark:border-white/10 dark:bg-white/5"
+              />
+            </div>
+          )}
         </Card>
 
         {/* Account actions */}

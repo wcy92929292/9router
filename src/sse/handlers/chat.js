@@ -80,6 +80,26 @@ export async function handleChat(request, clientRawRequest = null) {
     return errorResponse(HTTP_STATUS.BAD_REQUEST, "Missing model");
   }
 
+  // Keyword block: reject requests whose message content contains blocked keywords
+  if (settings.keywordBlockEnabled && settings.keywordBlockList) {
+    const keywords = settings.keywordBlockList.split(/[,，\n]/).map(k => k.trim()).filter(Boolean);
+    if (keywords.length > 0 && body.messages?.length) {
+      const getText = (content) => {
+        if (typeof content === "string") return content;
+        if (Array.isArray(content)) {
+          return content.filter(c => c.type === "text").map(c => c.text || "").join(" ");
+        }
+        return "";
+      };
+      const allText = body.messages.map(m => getText(m.content)).join(" ");
+      const matched = keywords.find(kw => allText.includes(kw));
+      if (matched) {
+        log.warn("BLOCK", `Request blocked by keyword filter: "${matched}"`);
+        return errorResponse(HTTP_STATUS.FORBIDDEN, `Request blocked: content contains blocked keyword "${matched}"`);
+      }
+    }
+  }
+
   // Bypass naming/warmup requests before combo rotation to avoid wasting rotation slots
   const userAgent = request?.headers?.get("user-agent") || "";
   const bypassResponse = handleBypassRequest(body, modelStr, userAgent, !!settings.ccFilterNaming);

@@ -61,6 +61,8 @@ const DEFAULT_SETTINGS = {
   pxpipeAutoInstall: true,
   pxpipeMinChars: 25000,
   pxpipeTimeoutMs: 15000,
+  keywordBlockEnabled: false,
+  keywordBlockList: "",
 };
 
 async function readRaw() {
